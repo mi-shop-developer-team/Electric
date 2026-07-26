@@ -1,10 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="bn" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ম্যাটেরিয়াল লিস্ট বিল্ডার (Material List Builder)</title>
+
+    <!-- অ্যাপ আইকন (Favicon & Apple Touch Icon) -->
+    <link rel="icon" type="image/jpeg" href="https://onlinecdndrive.vercel.app/electriclisticon.jpg">
+    <link rel="apple-touch-icon" href="https://onlinecdndrive.vercel.app/electriclisticon.jpg">
 
     <!-- PWA মেনিফেস্ট (Dynamic Inline Base64 Data URL) -->
     <link rel="manifest" id="manifest-placeholder">
@@ -103,7 +106,6 @@
             height: 100dvh;
             overflow: hidden;
             user-select: none;
-            /* হালকা রিফ্রেশ বন্ধ করতে ওভারস্ক্রোল আচরণ নিয়ন্ত্রণ */
             overscroll-behavior-y: contain;
         }
 
@@ -130,7 +132,7 @@
             transition: transform 0.2s ease;
         }
 
-        /* PWA Install Banner Popup */
+        /* PWA Install Popup Banner */
         #pwa-install-banner {
             display: none;
             background: var(--md-sys-color-secondary-container);
@@ -167,7 +169,14 @@
             color: var(--md-sys-color-on-surface);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .app-bar .app-icon-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
         }
 
         .icon-btn {
@@ -520,7 +529,10 @@
 
     <!-- PWA Install Popup Banner -->
     <div id="pwa-install-banner">
-        <span>মোবাইলে অ্যাপ হিসেবে ইনস্টল করুন</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="https://onlinecdndrive.vercel.app/electriclisticon.jpg" style="width:24px; height:24px; border-radius:4px;" alt="আইকন">
+            <span>মোবাইলে অ্যাপ হিসেবে ইনস্টল করুন</span>
+        </div>
         <div class="pwa-banner-actions">
             <button class="btn btn-primary" id="btn-pwa-install" style="padding: 4px 12px; font-size: 0.8rem;">ইনস্টল</button>
             <button class="icon-btn" id="btn-pwa-dismiss" style="width: 28px; height: 28px;">✕</button>
@@ -530,7 +542,7 @@
     <!-- হেডার -->
     <header class="app-bar">
         <div class="title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <img src="https://onlinecdndrive.vercel.app/electriclisticon.jpg" class="app-icon-img" alt="Logo" onerror="this.style.display='none'">
             <span>ম্যাটেরিয়াল লিস্ট বিল্ডার</span>
         </div>
         <button class="icon-btn" id="theme-toggle" title="থিম পরিবর্তন">
@@ -719,9 +731,11 @@
     <!-- জাভাস্ক্রিপ্ট অ্যাপ্লিকেশন লজিক -->
     <script>
         /* ==========================================================================
-           ০. PWA MANIFEST & SERVICE WORKER INJECTION (SINGLE FILE)
+           ০. PWA MANIFEST & SERVICE WORKER INJECTION (CUSTOM USER ICON)
            ========================================================================== */
         (function setupPWA() {
+            const customIconUrl = "https://onlinecdndrive.vercel.app/electriclisticon.jpg";
+            
             const manifestData = {
                 "name": "ম্যাটেরিয়াল লিস্ট বিল্ডার",
                 "short_name": "ম্যাটেরিয়াল",
@@ -731,9 +745,9 @@
                 "theme_color": "#006874",
                 "icons": [
                     {
-                        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23006874'><rect width='512' height='512' rx='100' fill='%23006874'/><path d='M256 100 L400 180 L400 330 L256 410 L112 330 L112 180 Z' fill='none' stroke='white' stroke-width='30'/></svg>",
-                        "sizes": "512x512",
-                        "type": "image/svg+xml"
+                        "src": customIconUrl,
+                        "sizes": "192x192 512x512",
+                        "type": "image/jpeg"
                     }
                 ]
             };
@@ -928,7 +942,6 @@
                 const btnInstall = document.getElementById('btn-pwa-install');
                 const btnDismiss = document.getElementById('btn-pwa-dismiss');
 
-                // যদি পূর্বে ডিসমিস বা ইনস্টল করে থাকে তবে আর দেখাবে না
                 const isDismissed = localStorage.getItem('pwa_banner_dismissed');
 
                 window.addEventListener('beforeinstallprompt', (e) => {
@@ -966,7 +979,7 @@
                 let startY = 0;
                 let currentY = 0;
                 let isPulling = false;
-                const minPullDistance = 130; // জোরে/বেশি টানলে তবেই রিফ্রেশ হবে (130px)
+                const minPullDistance = 130;
 
                 container.addEventListener('touchstart', (e) => {
                     if (container.scrollTop === 0) {
@@ -980,12 +993,10 @@
                     currentY = e.touches[0].clientY;
                     const diff = currentY - startY;
 
-                    // কেবল ওপরের দিকে থাকা অবস্থায় নিচে টানলে
                     if (diff > 0 && container.scrollTop === 0) {
-                        const pullDist = Math.min(diff * 0.5, minPullDistance + 20); // রেজিস্ট্যান্স ইফেক্ট
+                        const pullDist = Math.min(diff * 0.5, minPullDistance + 20);
                         indicator.style.top = `${pullDist - 50}px`;
                         
-                        // আইকন ঘোরানো
                         const rotate = Math.min((pullDist / minPullDistance) * 360, 360);
                         icon.style.transform = `rotate(${rotate}deg)`;
                     }
@@ -996,7 +1007,6 @@
                     const diff = currentY - startY;
 
                     if (diff * 0.5 >= minPullDistance && container.scrollTop === 0) {
-                        // রিফ্রেশ ট্রিগার করা হলো
                         indicator.style.top = '20px';
                         icon.style.transform = 'rotate(720deg)';
                         this.showToast('পেজ রিফ্রেশ হচ্ছে...');
@@ -1004,7 +1014,6 @@
                             window.location.reload();
                         }, 500);
                     } else {
-                        // হালকা টানে রিলিজ হয়ে আগের জায়গায় ফেরত যাবে
                         indicator.style.top = '-50px';
                         icon.style.transform = 'rotate(0deg)';
                     }
