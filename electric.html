@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="bn" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ম্যাটেরিয়াল লিস্ট বিল্ডার (Material List Builder)</title>
+    <style>
+        /* ==========================================================================
+           মেটেরিয়াল ডিজাইন ৩ সিএসএস থিম ও ভেরিয়েবল
+           ========================================================================== */
+        :root {
+            --md-sys-color-primary: #006874;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #97f0ff;
+            --md-sys-color-on-primary-container: #001f24;
+            --md-sys-color-secondary: #4a6267;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #cce8ee;
+            --md-sys-color-on-secondary-container: #051f23;
+            --md-sys-color-tertiary: #525e7d;
+            --md-sys-color-on-tertiary: #ffffff;
+            --md-sys-color-tertiary-container: #dae2ff;
+            --md-sys-color-on-tertiary-container: #0e1b37;
+            --md-sys-color-error: #ba1a1a;
+            --md-sys-color-error-container: #ffdad6;
+            --md-sys-color-on-error: #ffffff;
+            --md-sys-color-background: #f8fdff;
+            --md-sys-color-on-background: #191c1d;
+            --md-sys-color-surface: #f8fdff;
+            --md-sys-color-on-surface: #191c1d;
+            --md-sys-color-surface-variant: #dbe4e6;
+            --md-sys-color-on-surface-variant: #3f484a;
+            --md-sys-color-outline: #6f797b;
+            --md-sys-color-outline-variant: #bfc8ca;
+            --md-sys-color-surface-container: #eef4f6;
+            --md-sys-color-surface-container-high: #e8eeef;
+            --md-sys-color-surface-container-highest: #e2e8ea;
+            
+            --md-shape-corner-extra-small: 4px;
+            --md-shape-corner-small: 8px;
+            --md-shape-corner-medium: 12px;
+            --md-shape-corner-large: 16px;
+            --md-shape-corner-extra-large: 28px;
+            --md-shape-corner-full: 9999px;
+
+            --md-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+            --md-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+            --md-elevation-3: 0px 1px 8px 3px rgba(0, 0, 0, 0.15), 0px 3px 4px 0px rgba(0, 0, 0, 0.30);
+        }
+
+        html.dark {
+            --md-sys-color-primary: #4fe0f2;
+            --md-sys-color-on-primary: #00363d;
+            --md-sys-color-primary-container: #004f58;
+            --md-sys-color-on-primary-container: #97f0ff;
+            --md-sys-color-secondary: #b0cbd0;
+            --md-sys-color-on-secondary: #1c3438;
+            --md-sys-color-secondary-container: #334b4f;
+            --md-sys-color-on-secondary-container: #cce8ee;
+            --md-sys-color-tertiary: #bac6ea;
+            --md-sys-color-on-tertiary: #24304d;
+            --md-sys-color-tertiary-container: #3b4664;
+            --md-sys-color-on-tertiary-container: #dae2ff;
+            --md-sys-color-error: #ffb4ab;
+            --md-sys-color-error-container: #93000a;
+            --md-sys-color-on-error: #690005;
+            --md-sys-color-background: #0e1415;
+            --md-sys-color-on-background: #e1e3e4;
+            --md-sys-color-surface: #0e1415;
+            --md-sys-color-on-surface: #e1e3e4;
+            --md-sys-color-surface-variant: #3f484a;
+            --md-sys-color-on-surface-variant: #bfc8ca;
+            --md-sys-color-outline: #899294;
+            --md-sys-color-outline-variant: #3f484a;
+            --md-sys-color-surface-container: #1b2122;
+            --md-sys-color-surface-container-high: #252b2c;
+            --md-sys-color-surface-container-highest: #303637;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* অ্যাপ হেডার */
+        .app-bar {
+            height: 64px;
+            background: var(--md-sys-color-surface-container);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            z-index: 10;
+        }
+
+        .app-bar .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--md-shape-corner-full);
+            color: var(--md-sys-color-on-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:active {
+            background: var(--md-sys-color-surface-variant);
+        }
+
+        /* মেইন কন্টেন্ট এরিয়া */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 16px;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* বটম নেভিগেশন বার */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: var(--md-sys-color-surface-container);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--md-sys-color-on-surface-variant);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 25%;
+        }
+
+        .nav-icon-wrapper {
+            width: 56px;
+            height: 32px;
+            border-radius: var(--md-shape-corner-large);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .nav-item.active .nav-icon-wrapper {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .nav-item.active {
+            color: var(--md-sys-color-on-surface);
+            font-weight: 700;
+        }
+
+        /* ইউআই কার্ড ও ইনপুটস */
+        .card {
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: var(--md-shape-corner-large);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .input-field, .select-field, .textarea-field {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--md-shape-corner-small);
+            border: 1px solid var(--md-sys-color-outline);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+        }
+
+        /* বাটন শৈলী */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--md-shape-corner-full);
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: box-shadow 0.2s, background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+
+        .btn-secondary {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .btn-outlined {
+            background: transparent;
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-primary);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* সার্চ কম্পোনেন্ট */
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border-radius: var(--md-shape-corner-full);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            background: var(--md-sys-color-surface-container-highest);
+            color: var(--md-sys-color-on-surface);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* আইটেম কার্ড */
+        .product-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--md-sys-color-surface-container);
+            border-radius: var(--md-shape-corner-medium);
+            margin-bottom: 8px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .cart-item-card {
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            background: var(--md-sys-color-surface-container);
+            border-radius: var(--md-shape-corner-medium);
+            margin-bottom: 10px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            gap: 10px;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* পরিমাণ ও দামের ইনপুট কন্ট্রোল */
+        .cart-controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--md-sys-color-surface);
+            padding: 4px 8px;
+            border-radius: var(--md-shape-corner-full);
+            border: 1px solid var(--md-sys-color-outline);
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-val {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .price-input {
+            width: 100px;
+            padding: 6px 10px;
+            border-radius: var(--md-shape-corner-small);
+            border: 1px solid var(--md-sys-color-outline);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            font-size: 0.85rem;
+            outline: none;
+            text-align: right;
+        }
+
+        /* সর্বমোট টাকা কার্ড */
+        .total-summary-card {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            padding: 12px 16px;
+            border-radius: var(--md-shape-corner-medium);
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        /* খালি অবস্থা */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            stroke: var(--md-sys-color-outline);
+            margin-bottom: 12px;
+        }
+
+        #file-input { display: none; }
+
+        .toast {
+            position: fixed;
+            bottom: 84px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--md-sys-color-on-surface);
+            color: var(--md-sys-color-surface);
+            padding: 10px 20px;
+            border-radius: var(--md-shape-corner-full);
+            font-size: 0.85rem;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--md-elevation-2);
+        }
+
+        #render-canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার -->
+    <header class="app-bar">
+        <div class="title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span>ম্যাটেরিয়াল লিস্ট বিল্ডার</span>
+        </div>
+        <button class="icon-btn" id="theme-toggle" title="থিম পরিবর্তন">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+    </header>
+
+    <!-- মূল কন্টেন্ট -->
+    <main class="main-content">
+
+        <!-- ট্যাব ১: সার্চ ও পণ্য নির্বাচন -->
+        <section id="tab-search" class="tab-content active">
+            <div class="search-box">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="search-input" class="search-input" placeholder="পণ্যের নাম লিখে খুঁজুন..." autocomplete="off">
+            </div>
+
+            <div id="product-list">
+                <!-- সার্চ রেজাল্ট -->
+            </div>
+        </section>
+
+        <!-- ট্যাব ২: লিস্ট, অপশনাল প্রাইসিং ও PNG এক্সপোর্ট -->
+        <section id="tab-list" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="font-size: 1.1rem; font-weight: 600;">বর্তমান লিস্ট (<span id="cart-count">0</span>)</h2>
+                <button class="btn btn-outlined" id="clear-list-btn" style="padding: 4px 12px; font-size: 0.8rem;">লিস্ট খালি করুন</button>
+            </div>
+
+            <div id="cart-list">
+                <!-- সিলেক্ট করা পণ্যগুলো প্রদর্শন হবে -->
+            </div>
+
+            <div id="total-summary-container"></div>
+
+            <div class="card" style="margin-top: 16px;">
+                <div class="card-title">PNG ডাউনলোড</div>
+                <button class="btn btn-primary btn-block" id="export-png-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    লিস্টটি PNG ছবি হিসেবে ডাউনলোড করুন
+                </button>
+            </div>
+        </section>
+
+        <!-- ট্যাব ৩: নতুন পণ্য ম্যানুয়ালি যোগ করা -->
+        <section id="tab-add" class="tab-content">
+            <div class="card">
+                <div class="card-title">নতুন পণ্য যোগ করুন</div>
+                <form id="add-product-form">
+                    <div class="input-group">
+                        <label class="input-label">পণ্যের নাম *</label>
+                        <input type="text" id="entry-name" class="input-field" placeholder="যেমন: LED Bulb, Switch, PVC Pipe" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">একক (Unit)</label>
+                        <select id="entry-unit" class="select-field">
+                            <option value="Pcs">Pcs (পিস)</option>
+                            <option value="Feet">Feet (ফুট)</option>
+                            <option value="Meter">Meter (মিটার)</option>
+                            <option value="Kg">Kg (কেজি)</option>
+                            <option value="Packet">Packet (প্যাকেট)</option>
+                            <option value="Box">Box (বক্স)</option>
+                            <option value="Set">Set (সেট)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">পণ্য সংরক্ষণ করুন</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ট্যাব ৪: সেটিংস ও GitHub API ডাটা সিঙ্ক -->
+        <section id="tab-settings" class="tab-content">
+            <div class="card">
+                <div class="card-title">ডাটাবেজ পরিসংখ্যান</div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>মোট প্রোডাক্ট:</span>
+                    <strong id="db-prod-count">0</strong>
+                </div>
+            </div>
+
+            <!-- GitHub API কনফিগারেশন কার্ড -->
+            <div class="card">
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    GitHub কনফিগারেশন (ডাটা সিঙ্ক)
+                </div>
+                
+                <form id="github-config-form">
+                    <div class="input-group">
+                        <label class="input-label">গিটহাব ইউজারনেম (Username)</label>
+                        <input type="text" id="gh-username" class="input-field" placeholder="যেমন: Omar123">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">রেপোজিটরি নাম (Repository Name)</label>
+                        <input type="text" id="gh-repo" class="input-field" placeholder="যেমন: material-builder">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Personal Access Token (PAT Classic)</label>
+                        <input type="password" id="gh-token" class="input-field" placeholder="ghp_XXXXXXXXXXXXXXXXXXXX">
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary btn-block" style="margin-bottom: 8px;">গিটহাব তথ্য সেভ করুন</button>
+                </form>
+
+                <hr style="margin: 12px 0; border: none; border-top: 1px solid var(--md-sys-color-outline-variant)">
+
+                <!-- দুই ধরণের গিটহাব আপলোড বাটন -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="btn btn-primary btn-block" id="sync-gh-txt-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        GitHub-এ data.txt আপলোড করুন
+                    </button>
+                    <button class="btn btn-outlined btn-block" id="sync-gh-btn">
+                        GitHub-এ data2.json আপলোড করুন
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">লোকাল ফাইল ইমপোর্ট/ডাউনলোড</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <input type="file" id="file-input" accept=".txt,.json">
+                    <button class="btn btn-outlined btn-block" onclick="document.getElementById('file-input').click()">ডিভাইস থেকে ফাইল ইমপোর্ট করুন</button>
+                    <button class="btn btn-outlined btn-block" id="export-json-btn">লোকাল ব্যাকআপ ফাইল ডাউনলোড (JSON)</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="tab-search">
+            <div class="nav-icon-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <span>খুঁজুন</span>
+        </button>
+        <button class="nav-item" data-tab="tab-list">
+            <div class="nav-icon-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <span>লিস্ট</span>
+        </button>
+        <button class="nav-item" data-tab="tab-add">
+            <div class="nav-icon-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <span>যোগ করুন</span>
+        </button>
+        <button class="nav-item" data-tab="tab-settings">
+            <div class="nav-icon-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <span>সেটিংস</span>
+        </button>
+    </nav>
+
+    <!-- টোস্ট নোটিফিকেশন -->
+    <div id="toast" class="toast">বার্তা নির্দেশক</div>
+
+    <!-- PNG এক্সপোর্ট ক্যানভাস -->
+    <canvas id="render-canvas"></canvas>
+
+    <!-- জাভাস্ক্রিপ্ট অ্যাপ্লিকেশন লজিক -->
+    <script>
+        /* ==========================================================================
+           ১. অফলাইন ডাটাবেজ (INDEXEDDB)
+           ========================================================================== */
+        class MaterialDatabase {
+            constructor() {
+                this.dbName = 'MaterialNoCatDB';
+                this.version = 1;
+                this.db = null;
+            }
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.version);
+
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('products')) {
+                            const prodStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                            prodStore.createIndex('name', 'name', { unique: false });
+                        }
+                    };
+
+                    request.onsuccess = (e) => {
+                        this.db = e.target.result;
+                        resolve(this.db);
+                    };
+
+                    request.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            async addProduct(product) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction('products', 'readwrite');
+                    const store = tx.objectStore('products');
+                    const req = store.add(product);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async bulkAddProducts(products) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction('products', 'readwrite');
+                    const store = tx.objectStore('products');
+                    products.forEach(prod => store.add(prod));
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            async getAllProducts() {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction('products', 'readonly');
+                    const store = tx.objectStore('products');
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+        }
+
+        /* ==========================================================================
+           ২. সিম্পল প্রোডাক্ট সার্চ ইঞ্জিন
+           ========================================================================== */
+        class SearchEngine {
+            constructor(db) {
+                this.db = db;
+            }
+
+            async search(query) {
+                const allProducts = await this.db.getAllProducts();
+                if (!query || query.trim() === '') return allProducts;
+
+                const cleanQuery = query.toLowerCase().trim();
+                return allProducts.filter(p => (p.name || '').toLowerCase().includes(cleanQuery));
+            }
+        }
+
+        /* ==========================================================================
+           ৩. মেইন অ্যাপ কন্ট্রোলার
+           ========================================================================== */
+        class App {
+            constructor() {
+                this.db = new MaterialDatabase();
+                this.searchEngine = null;
+                this.cart = [];
+
+                this.init();
+            }
+
+            async init() {
+                await this.db.init();
+                this.searchEngine = new SearchEngine(this.db);
+
+                this.bindEvents();
+                this.loadGitHubConfigUI();
+                await this.loadInitialData();
+                this.renderProducts();
+                this.updateDatabaseStats();
+            }
+
+            // data.txt, data2.json বা data.json ফাইল চেক করা
+            async loadInitialData() {
+                const existing = await this.db.getAllProducts();
+                if (existing.length === 0) {
+                    try {
+                        let response = await fetch('./data.txt');
+                        if (response.ok) {
+                            const textData = await response.text();
+                            const lines = textData.split(/\r?\n/);
+                            const prods = lines.map(line => line.trim()).filter(Boolean).map(name => ({ name, unit: 'Pcs' }));
+                            if (prods.length > 0) {
+                                await this.db.bulkAddProducts(prods);
+                                this.showToast('data.txt হতে ডাটা লোড হয়েছে');
+                                return;
+                            }
+                        }
+
+                        // বিকল্প fallback: data2.json বা data.json
+                        response = await fetch('./data2.json');
+                        if(!response.ok) response = await fetch('./data.json');
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            const productsToImport = data.map(item => typeof item === 'string' ? { name: item, unit: 'Pcs' } : item);
+                            await this.db.bulkAddProducts(productsToImport);
+                            this.showToast('JSON ফাইল হতে ডাটা লোড হয়েছে');
+                        }
+                    } catch (e) {
+                        // লোকাল CORS মোডে ফেইল করলে ইগনোর করা হবে
+                    }
+                }
+            }
+
+            loadGitHubConfigUI() {
+                document.getElementById('gh-username').value = localStorage.getItem('gh_username') || '';
+                document.getElementById('gh-repo').value = localStorage.getItem('gh_repo') || '';
+                document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
+            }
+
+            bindEvents() {
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.switchTab(e.currentTarget.dataset.tab);
+                    });
+                });
+
+                document.getElementById('theme-toggle').addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                });
+
+                document.getElementById('search-input').addEventListener('input', (e) => {
+                    this.renderProducts(e.target.value);
+                });
+
+                document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleManualEntry();
+                });
+
+                document.getElementById('file-input').addEventListener('change', (e) => {
+                    this.handleFileImport(e);
+                });
+
+                document.getElementById('clear-list-btn').addEventListener('click', () => {
+                    this.cart = [];
+                    this.renderCart();
+                    this.showToast('লিস্ট খালি করা হয়েছে');
+                });
+
+                document.getElementById('export-png-btn').addEventListener('click', () => {
+                    this.exportListToPNG();
+                });
+
+                document.getElementById('github-config-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem('gh_username', document.getElementById('gh-username').value.trim());
+                    localStorage.setItem('gh_repo', document.getElementById('gh-repo').value.trim());
+                    localStorage.setItem('gh_token', document.getElementById('gh-token').value.trim());
+                    this.showToast('গিটহাব কনফিগারেশন সেভ হয়েছে!');
+                });
+
+                // data2.json আপলোড
+                document.getElementById('sync-gh-btn').addEventListener('click', async () => {
+                    await this.syncToGitHub('data2.json', 'json');
+                });
+
+                // data.txt আপলোড
+                document.getElementById('sync-gh-txt-btn').addEventListener('click', async () => {
+                    await this.syncToGitHub('data.txt', 'txt');
+                });
+
+                document.getElementById('export-json-btn').addEventListener('click', async () => {
+                    const prods = await this.db.getAllProducts();
+                    if(prods.length === 0) {
+                        this.showToast('ডাটাবেজ বর্তমানে খালি!');
+                        return;
+                    }
+
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(prods, null, 2));
+                    const downloadAnchor = document.createElement('a');
+                    downloadAnchor.setAttribute("href", dataStr);
+                    downloadAnchor.setAttribute("download", `material_backup_${Date.now()}.json`);
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                    this.showToast('ডাটাবেজ ডাউনলোড সম্পন্ন হয়েছে');
+                });
+            }
+
+            // GitHub REST API হ্যান্ডলার (data2.json অথবা data.txt দুইটার জন্যই কাজ করবে)
+            async syncToGitHub(fileName, type) {
+                const username = localStorage.getItem('gh_username');
+                const repo = localStorage.getItem('gh_repo');
+                const token = localStorage.getItem('gh_token');
+
+                if (!username || !repo || !token) {
+                    this.showToast('অনুগ্রহ করে গিটহাব ইউজারনেম, রেপো ও টোকেন সেটিংসে দিন!');
+                    return;
+                }
+
+                const prods = await this.db.getAllProducts();
+                if (prods.length === 0) {
+                    this.showToast('ডাটাবেজে কোনো পণ্য নেই!');
+                    return;
+                }
+
+                let rawContent = "";
+                if (type === 'txt') {
+                    // শুধু প্রতিটি লাইনে পণ্যের নাম
+                    rawContent = prods.map(p => p.name).join('\n');
+                } else {
+                    // JSON ফরম্যাট
+                    rawContent = JSON.stringify(prods.map(p => ({ name: p.name, unit: p.unit || 'Pcs' })), null, 2);
+                }
+
+                // UTF-8 থেকে Base64 এনকোডিং
+                const base64Content = btoa(unescape(encodeURIComponent(rawContent)));
+                const url = `https://api.github.com/repos/${username}/${repo}/contents/${fileName}`;
+
+                this.showToast(`${fileName} GitHub-এ আপলোড হচ্ছে...`);
+
+                try {
+                    let sha = null;
+                    const getRes = await fetch(url, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
+                    if (getRes.ok) {
+                        const fileData = await getRes.json();
+                        sha = fileData.sha;
+                    }
+
+                    const bodyData = {
+                        message: `Update ${fileName} via Material Builder App`,
+                        content: base64Content
+                    };
+                    if (sha) bodyData.sha = sha;
+
+                    const putRes = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify(bodyData)
+                    });
+
+                    if (putRes.ok) {
+                        this.showToast(`${fileName} সফলভাবে GitHub-এ সেভ হয়েছে!`);
+                    } else {
+                        const err = await putRes.json();
+                        this.showToast(`ফেইল্ড: ${err.message || 'ভুল পারমিশন'}`);
+                    }
+                } catch (e) {
+                    this.showToast('নেটওয়ার্ক বা গিটহাব API এরর!');
+                }
+            }
+
+            switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+                document.getElementById(tabId).classList.add('active');
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            }
+
+            showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.innerText = message;
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2500);
+            }
+
+            async updateDatabaseStats() {
+                const prods = await this.db.getAllProducts();
+                document.getElementById('db-prod-count').innerText = prods.length;
+            }
+
+            async handleManualEntry() {
+                const name = document.getElementById('entry-name').value.trim();
+                const unit = document.getElementById('entry-unit').value;
+
+                await this.db.addProduct({ name, unit });
+                this.showToast('পণ্য সফলভাবে সংরক্ষণ করা হয়েছে');
+                document.getElementById('add-product-form').reset();
+                this.updateDatabaseStats();
+                this.renderProducts();
+            }
+
+            async handleFileImport(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const content = event.target.result;
+                    let productsToAdd = [];
+
+                    if (file.name.endsWith('.json')) {
+                        try {
+                            const parsed = JSON.parse(content);
+                            productsToAdd = parsed.map(item => typeof item === 'string' ? { name: item, unit: 'Pcs' } : item);
+                        } catch (err) {
+                            this.showToast('ভুল JSON ফাইল ফরম্যাট!');
+                            return;
+                        }
+                    } else {
+                        const lines = content.split(/\r?\n/);
+                        for (let line of lines) {
+                            let trimmed = line.trim();
+                            if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('[')) {
+                                productsToAdd.push({ name: trimmed, unit: 'Pcs' });
+                            }
+                        }
+                    }
+
+                    if (productsToAdd.length > 0) {
+                        await this.db.bulkAddProducts(productsToAdd);
+                        this.showToast(`${productsToAdd.length} টি পণ্য ইমপোর্ট হয়েছে!`);
+                        this.updateDatabaseStats();
+                        this.renderProducts();
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            async renderProducts(query = '') {
+                const container = document.getElementById('product-list');
+                const products = await this.searchEngine.search(query);
+
+                if (products.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <p>কোন পণ্য পাওয়া যায়নি।</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = products.map(p => `
+                    <div class="product-item">
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            <div style="font-size: 0.8rem; color: var(--md-sys-color-outline)">একক: ${p.unit || 'Pcs'}</div>
+                        </div>
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="app.addToCart(${p.id})">+ লিস্টে যোগ</button>
+                    </div>
+                `).join('');
+            }
+
+            async addToCart(productId) {
+                const products = await this.db.getAllProducts();
+                const product = products.find(p => p.id === productId);
+                if (!product) return;
+
+                const existing = this.cart.find(item => item.product.id === productId);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    this.cart.push({ product, quantity: 1, unitPrice: '' });
+                }
+
+                this.renderCart();
+                this.showToast('লিস্টে যোগ করা হয়েছে');
+            }
+
+            updateCartQty(productId, delta) {
+                const item = this.cart.find(i => i.product.id === productId);
+                if (!item) return;
+
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    this.cart = this.cart.filter(i => i.product.id !== productId);
+                }
+                this.renderCart();
+            }
+
+            updateCartPrice(productId, val) {
+                const item = this.cart.find(i => i.product.id === productId);
+                if (item) {
+                    item.unitPrice = val;
+                    this.renderTotalSummary();
+                }
+            }
+
+            renderCart() {
+                const container = document.getElementById('cart-list');
+                document.getElementById('cart-count').innerText = this.cart.length;
+
+                if (this.cart.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                            <p>লিস্টে কোন পণ্য নেই</p>
+                        </div>
+                    `;
+                    document.getElementById('total-summary-container').innerHTML = '';
+                    return;
+                }
+
+                container.innerHTML = this.cart.map(item => {
+                    const price = parseFloat(item.unitPrice) || 0;
+                    const subtotal = price > 0 ? (price * item.quantity).toFixed(2) : null;
+
+                    return `
+                        <div class="cart-item-card">
+                            <div class="product-title">${item.product.name}</div>
+                            <div class="cart-controls-row">
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="app.updateCartQty(${item.product.id}, -1)">-</button>
+                                    <span class="qty-val">${item.quantity}</span>
+                                    <button class="qty-btn" onclick="app.updateCartQty(${item.product.id}, 1)">+</button>
+                                    <span style="font-size: 0.8rem; color: var(--md-sys-color-outline); margin-left: 4px;">${item.product.unit || 'Pcs'}</span>
+                                </div>
+                                <div>
+                                    <input type="number" class="price-input" placeholder="দাম (ঐচ্ছিক)" value="${item.unitPrice}" oninput="app.updateCartPrice(${item.product.id}, this.value)">
+                                    ${subtotal ? `<span style="font-size: 0.85rem; font-weight: bold; margin-left: 6px;">= ৳${subtotal}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                this.renderTotalSummary();
+            }
+
+            renderTotalSummary() {
+                let grandTotal = 0;
+                let hasPrice = false;
+
+                this.cart.forEach(item => {
+                    const price = parseFloat(item.unitPrice) || 0;
+                    if (price > 0) {
+                        hasPrice = true;
+                        grandTotal += price * item.quantity;
+                    }
+                });
+
+                const container = document.getElementById('total-summary-container');
+                if (hasPrice) {
+                    container.innerHTML = `
+                        <div class="total-summary-card">
+                            <span>সর্বমোট আনুমানিক মূল্য:</span>
+                            <span>৳ ${grandTotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '';
+                }
+            }
+
+            exportListToPNG() {
+                if (this.cart.length === 0) {
+                    this.showToast('লিস্ট খালি!');
+                    return;
+                }
+
+                const canvas = document.getElementById('render-canvas');
+                const ctx = canvas.getContext('2d');
+
+                let grandTotal = 0;
+                let hasPrice = false;
+                this.cart.forEach(item => {
+                    const p = parseFloat(item.unitPrice) || 0;
+                    if (p > 0) {
+                        hasPrice = true;
+                        grandTotal += p * item.quantity;
+                    }
+                });
+
+                const width = 600;
+                const rowHeight = 40;
+                const headerHeight = 120;
+                const footerHeight = hasPrice ? 80 : 40;
+                const height = headerHeight + (this.cart.length * rowHeight) + footerHeight;
+
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.fillStyle = '#006874';
+                ctx.fillRect(0, 0, width, 80);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 22px system-ui, Arial';
+                ctx.fillText('ম্যাটেরিয়াল রিকোয়ারমেন্ট লিস্ট', 20, 48);
+
+                ctx.fillStyle = '#3f484a';
+                ctx.font = '14px system-ui, Arial';
+                const today = new Date().toLocaleDateString('bn-BD');
+                ctx.fillText(`তারিখ: ${today}`, 20, 105);
+
+                ctx.font = 'bold 14px system-ui, Arial';
+                ctx.fillText('ক্রমিক', 20, 135);
+                ctx.fillText('পণ্যের নাম', 70, 135);
+                ctx.fillText('পরিমাণ', 320, 135);
+
+                if (hasPrice) {
+                    ctx.fillText('একক মূল্য', 420, 135);
+                    ctx.fillText('মোট টাকা', 510, 135);
+                }
+
+                ctx.strokeStyle = '#bfc8ca';
+                ctx.beginPath();
+                ctx.moveTo(20, 145);
+                ctx.lineTo(580, 145);
+                ctx.stroke();
+
+                let y = 175;
+                ctx.font = '14px system-ui, Arial';
+                ctx.fillStyle = '#191c1d';
+
+                this.cart.forEach((item, index) => {
+                    const price = parseFloat(item.unitPrice) || 0;
+                    const subtotal = price * item.quantity;
+
+                    ctx.fillText((index + 1).toString(), 20, y);
+                    ctx.fillText(item.product.name.substring(0, 26), 70, y);
+                    ctx.fillText(`${item.quantity} ${item.product.unit || 'Pcs'}`, 320, y);
+
+                    if (hasPrice) {
+                        ctx.fillText(price > 0 ? `৳${price}` : '-', 420, y);
+                        ctx.fillText(price > 0 ? `৳${subtotal.toFixed(0)}` : '-', 510, y);
+                    }
+
+                    ctx.strokeStyle = '#e2e8ea';
+                    ctx.beginPath();
+                    ctx.moveTo(20, y + 10);
+                    ctx.lineTo(580, y + 10);
+                    ctx.stroke();
+
+                    y += rowHeight;
+                });
+
+                if (hasPrice) {
+                    y += 10;
+                    ctx.fillStyle = '#006874';
+                    ctx.fillRect(350, y, 230, 36);
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 15px system-ui, Arial';
+                    ctx.fillText(`সর্বমোট: ৳ ${grandTotal.toFixed(2)}`, 365, y + 23);
+                }
+
+                const link = document.createElement('a');
+                link.download = `material_list_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                this.showToast('PNG চিত্র ডাউনলোড সম্পন্ন');
+            }
+        }
+
+        // অ্যাপ ইনিশিয়ালাইজেশন
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new App();
+        });
+    </script>
+</body>
+</html>
